@@ -151,6 +151,17 @@ async function persistTelemetry(msg) {
     msg.position != null ? msg.position : null,
     msg
   ];
+
+  // Debug logging to diagnose parameter mismatch issues
+  try {
+    const compactSql = insertSql.replace(/\s+/g, ' ').trim();
+    const valueTypes = values.map(v => (v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v));
+    console.log('DB INSERT SQL:', compactSql);
+    console.log('DB INSERT values.length =', values.length, 'types =', JSON.stringify(valueTypes));
+  } catch (e) {
+    console.warn('Failed to log DB debug info:', e.message);
+  }
+
   try {
     await pool.query(insertSql, values);
   } catch (err) {
