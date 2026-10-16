@@ -134,7 +134,7 @@ async function persistTelemetry(msg) {
       speed, rpm, fuel, position, payload
     ) VALUES (
       to_timestamp($1::double precision/1000), $1, $2, $3, $4, $5,
-      $6, $7, $8, $9, $10
+      $6, $7, $8, $9, $10, $11
     )
     RETURNING id;
   `;
