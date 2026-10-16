@@ -128,18 +128,22 @@ async function persistTelemetry(msg) {
     console.warn('Skipping DB persist: DB not ready yet');
     return;
   }
+
+  // Correct mapping: 11 target columns, 11 expressions in VALUES, but only 10 parameter placeholders
+  // because we use to_timestamp($1) (which references $1) and then parameters $1..$10.
   const insertSql = `
     INSERT INTO telemetry (
       ts, raw_ts, car_id, team, class, lap_number,
       speed, rpm, fuel, position, payload
     ) VALUES (
       to_timestamp($1::double precision/1000), $1, $2, $3, $4, $5,
-      $6, $7, $8, $9, $10, $11
+      $6, $7, $8, $9, $10
     )
     RETURNING id;
   `;
+
+  // Values array maps to $1..$10
   const values = [
-    msg.timestamp,
     msg.timestamp,
     msg.car_id,
     msg.team || null,
